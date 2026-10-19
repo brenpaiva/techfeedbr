@@ -1,0 +1,59 @@
+name: techfeed-br
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    command: ["postgres", "-c", "shared_buffers=32MB", "-c", "max_connections=20", "-c", "work_mem=2MB", "-c", "maintenance_work_mem=16MB"]
+    mem_limit: 192m
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      POSTGRES_DB: techfeed
+      POSTGRES_USER: techfeed
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the private .env file}
+    volumes:
+      - techfeed_postgres:/var/lib/postgresql/data
+    networks: [private]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U techfeed -d techfeed"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  api:
+    image: techfeed-backend:2026-10-19-web-eval
+    container_name: techfeed-br-api
+    restart: unless-stopped
+    mem_limit: 384m
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/techfeed
+      POSTGRES_USER: techfeed
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the private .env file}
+      GNEWS_API_KEY: ${GNEWS_API_KEY:-}
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health
+      JAVA_TOOL_OPTIONS: -Xms32m -Xmx192m -XX:MaxMetaspaceSize=128m
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [private, portfolio]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+
+networks:
+  private:
+  portfolio:
+    external: true
+    name: portfolio_all_sites
+
+volumes:
+  techfeed_postgres:

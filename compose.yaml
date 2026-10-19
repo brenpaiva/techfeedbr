@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-techfeed}
+      POSTGRES_USER: ${POSTGRES_USER:-techfeed}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-techfeed}
+    ports:
+      - "5432:5432"
+    volumes:
+      - techfeed_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-techfeed} -d ${POSTGRES_DB:-techfeed}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-techfeed}
+      POSTGRES_USER: ${POSTGRES_USER:-techfeed}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-techfeed}
+      GNEWS_API_KEY: ${GNEWS_API_KEY:-}
+    ports:
+      - "${TECHFEED_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  techfeed_postgres:

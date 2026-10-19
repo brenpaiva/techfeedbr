@@ -1,0 +1,85 @@
+spring:
+  application:
+    name: techfeed-backend
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/techfeed}
+    username: ${POSTGRES_USER:techfeed}
+    password: ${POSTGRES_PASSWORD:techfeed}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  mvc:
+    problemdetails:
+      enabled: true
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+techfeed:
+  stale-after: 7d
+  sources:
+    gnews:
+      enabled: false
+      base-url: https://gnews.io/api/v4
+      api-key: ${GNEWS_API_KEY:}
+      ttl: 1h
+    ebc:
+      enabled: true
+      feed-url: https://agenciabrasil.ebc.com.br/radioagencia-nacional/rss/pesquisa-e-inovacao/feed.xml
+      backup-feed-url: https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml
+      ttl: 15m
+    dev:
+      enabled: true
+      base-url: https://dev.to/api
+      ttl: 30m
+    tabnews:
+      enabled: false
+      base-url: https://www.tabnews.com.br/api/v1
+      ttl: 30m
+    tecnoblog:
+      enabled: true
+      feed-url: https://tecnoblog.net/noticias/feed/
+      ttl: 30m
+    olhar-digital:
+      enabled: true
+      ai-feed-url: https://olhardigital.com.br/editorias/inteligencia-artificial/feed/
+      security-feed-url: https://olhardigital.com.br/editorias/seguranca/feed/
+      ttl: 30m
+    tudo-celular:
+      enabled: true
+      feed-url: https://www.tudocelular.com/rss/
+      ttl: 30m
+    hardware:
+      enabled: true
+      feed-url: https://www.hardware.com.br/feed/
+      ttl: 30m
+    mundo-conectado:
+      enabled: true
+      feed-url: https://www.mundoconectado.com.br/feed/
+      ttl: 30m
+    mac-magazine:
+      enabled: true
+      feed-url: https://macmagazine.com.br/feed/
+      ttl: 30m
+    adrenaline:
+      enabled: true
+      feed-url: https://www.adrenaline.com.br/feed/
+      ttl: 30m

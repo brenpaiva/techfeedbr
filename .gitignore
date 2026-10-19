@@ -1,0 +1,40 @@
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+.env
+.env.*
+!.env.example
+
+backend/target/
+mobile/.gradle/
+mobile/build/
+mobile/app/build/
+mobile/local.properties
+mobile/signing.local.properties
+mobile/keystores/
+
+*.log
+.cache/
+*.hprof
+
+# Arquivos locais, materiais acadêmicos e artefatos gerados
+.codex_tmp/
+.codex-remote-attachments/
+tmp/
+dist/
+entrega/
+parte teorica/
+Guia_do_TCC.pdf
+PROJETO DE TCC - IA GENERATIVA - BRENO PAIVA.docx
+PROMPT_MESTRE_TCC_TECHFEED_BR.md
+*.apk
+*.aab
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.pem
+*.key
